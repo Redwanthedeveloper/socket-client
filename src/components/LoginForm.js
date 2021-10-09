@@ -1,29 +1,21 @@
 import { LockClosedIcon } from '@heroicons/react/solid';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginAction } from '../actions/authActions';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.userLogin);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { data } = await axios.post(
-      'http://localhost:5000/api/login',
-      {
-        email,
-        password,
-      },
-      {
-        withCredentials: true,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    localStorage.setItem('userData', JSON.stringify(data.user));
+    const userObject = {
+      email,
+      password,
+    };
+    dispatch(loginAction(userObject));
   };
 
   return (
@@ -37,6 +29,16 @@ const LoginForm = () => {
             Sign in to your account
           </h2>
         </div>
+        {loading ? (
+          <div className='justify-center flex'>
+            <span className='flex h-6 w-6'>
+              <span className='animate-ping absolute inline-flex h-6 w-6 rounded-full bg-purple-400 opacity-75'></span>
+              <span className='relative inline-flex rounded-full h-6 w-6 bg-purple-500'></span>
+            </span>
+          </div>
+        ) : (
+          ''
+        )}
         <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
           <div className='rounded-md shadow-sm -space-y-px'>
             <div>
@@ -69,6 +71,9 @@ const LoginForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {error && error.common && (
+              <p className='text-red-600 text-sm py-2'>{error.common.msg}</p>
+            )}
           </div>
 
           <div className='flex items-center justify-between'>

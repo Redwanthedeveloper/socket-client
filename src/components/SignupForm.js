@@ -1,15 +1,16 @@
-import { LockClosedIcon } from '@heroicons/react/solid';
 import { useState } from 'react';
-import axios from 'axios';
-import { data } from 'autoprefixer';
+import { useDispatch, useSelector } from 'react-redux';
+import { signupAction } from '../actions/authActions';
 
 const SignupForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [avatar, setAvatar] = useState('');
-  const [message, setMessage] = useState({});
 
+  const dispatch = useDispatch();
+
+  const { loading, error } = useSelector((state) => state.userRegister);
   const handleSubmit = async (e) => {
     e.preventDefault();
     // prepare form data
@@ -19,20 +20,12 @@ const SignupForm = () => {
     formData.append('password', password);
     formData.append('avatar', avatar);
 
-    // send to server
-    const { data } = await axios({
-      url: 'http://127.0.0.1:5000/api/signup',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      data: formData,
-    });
-    console.log(data);
+    dispatch(signupAction(formData));
   };
 
   return (
     <div className='min-h-full flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8'>
+      {/* {message && message.message ? toast.success(message.message) : ''} */}
       <div className='max-w-md w-full space-y-8'>
         <div>
           <h2 className='text-center text-4xl font-black text-indigo-600'>
@@ -42,6 +35,16 @@ const SignupForm = () => {
             New User? signup here!
           </h2>
         </div>
+        {loading ? (
+          <div className='justify-center flex'>
+            <span className='flex h-6 w-6'>
+              <span className='animate-ping absolute inline-flex h-6 w-6 rounded-full bg-purple-400 opacity-75'></span>
+              <span className='relative inline-flex rounded-full h-6 w-6 bg-purple-500'></span>
+            </span>
+          </div>
+        ) : (
+          ''
+        )}
         <form
           className='mt-8 space-y-6'
           onSubmit={handleSubmit}
@@ -62,7 +65,9 @@ const SignupForm = () => {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <p className='text-red-600'></p>
+            {error && error.name && (
+              <p className='text-red-600 text-sm py-2'>{error.name.msg}</p>
+            )}
 
             <div>
               <label htmlFor='email-address' className='sr-only'>
@@ -79,6 +84,9 @@ const SignupForm = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+            {error && error.email && (
+              <p className='text-red-600 text-sm py-2'>{error.email.msg}</p>
+            )}
             <div>
               <label htmlFor='password' className='sr-only'>
                 Password
@@ -94,6 +102,9 @@ const SignupForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {error && error.password && (
+              <p className='text-red-600 text-sm py-2'>{error.password.msg}</p>
+            )}
 
             <div>
               <label className='block text-sm font-normal text-gray-700'>
@@ -137,6 +148,9 @@ const SignupForm = () => {
                 </div>
               </div>
             </div>
+            {error && error.avatar && (
+              <p className='text-red-600 text-sm py-2'>{error.avatar.msg}</p>
+            )}
           </div>
 
           <div>
@@ -144,12 +158,6 @@ const SignupForm = () => {
               type='submit'
               className='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
             >
-              <span className='absolute left-0 inset-y-0 flex items-center pl-3'>
-                <LockClosedIcon
-                  className='h-5 w-5 text-indigo-500 group-hover:text-indigo-400'
-                  aria-hidden='true'
-                />
-              </span>
               Sign up
             </button>
           </div>
