@@ -10,7 +10,7 @@ const Messages = () => {
         <div className='h-16'>
           <MessageTop />
         </div>
-        <div className='flex-1 flex flex-col-reverse px-6 overflow-y-scroll '>
+        <div className='flex-1 flex flex-col-reverse px-6 overflow-y-scroll'>
           <MessageMain />
         </div>
         <div className='h-20'>

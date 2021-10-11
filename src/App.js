@@ -19,10 +19,10 @@ function App() {
       <ToastContainer />
       <Switch>
         <Route exact path='/' component={HomeScreen}>
-          {userInfo && userInfo.userId && <Redirect to='/inbox' />}
+          {userInfo && userInfo._id && <Redirect to='/inbox' />}
         </Route>
         <Route path='/signup' component={SignupScreen}>
-          {userInfo && userInfo.userId && <Redirect to='/inbox' />}
+          {userInfo && userInfo._id && <Redirect to='/inbox' />}
         </Route>
         <Route path='/inbox' component={InboxScreen}>
           {!userInfo && <Redirect to='/' />}

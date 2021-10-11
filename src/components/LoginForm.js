@@ -71,9 +71,7 @@ const LoginForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            {error && error.common && (
-              <p className='text-red-600 text-sm py-2'>{error.common.msg}</p>
-            )}
+            {error && <p className='text-red-600 text-sm py-2'>{error}</p>}
           </div>
 
           <div className='flex items-center justify-between'>

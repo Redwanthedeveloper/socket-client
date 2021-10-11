@@ -54,11 +54,10 @@ export const loginAction = (user) => async (dispatch) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      withCredentials: true,
     };
 
     const { data } = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}login`,
+      `${process.env.REACT_APP_SERVER_URL}/auth/login`,
       user,
       config
     );
@@ -67,14 +66,20 @@ export const loginAction = (user) => async (dispatch) => {
       type: USER_LOGIN_SUCCESS,
       payload: data,
     });
-
-    localStorage.setItem('userInfo', JSON.stringify(data.user));
+    if (data && data.user && data.accessToken) {
+      const sessionData = data.accessToken
+        ? JSON.stringify(data.accessToken)
+        : '';
+      const localData = data.user ? JSON.stringify(data.user) : '';
+      sessionStorage.setItem('usertoken', sessionData);
+      localStorage.setItem('userInfo', localData);
+    }
   } catch (err) {
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:
-        err.response && err.response.data.errors
-          ? err.response.data.errors
+        err.response && err.response.data.message
+          ? err.response.data.message
           : err.message,
     });
   }
